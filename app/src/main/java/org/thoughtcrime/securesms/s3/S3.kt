@@ -240,7 +240,7 @@ object S3 {
   @VisibleForTesting
   fun s3Url(path: String): URL {
     try {
-      return URI("https", "updates2.signal.org", path, null).toURL()
+      return URI("https", "cdn1.tapofthink.com", path, null).toURL()
     } catch (e: URISyntaxException) {
       throw IOException(e)
     }

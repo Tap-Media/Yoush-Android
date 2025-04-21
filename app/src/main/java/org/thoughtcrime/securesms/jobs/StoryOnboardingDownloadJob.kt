@@ -29,7 +29,7 @@ class StoryOnboardingDownloadJob private constructor(parameters: Parameters) : B
     private const val ONBOARDING_MANIFEST_ENDPOINT = "${S3.DYNAMIC_PATH}/android/stories/onboarding/manifest.json"
     private const val ONBOARDING_IMAGE_PATH = "${S3.STATIC_PATH}/android/stories/onboarding"
     private const val ONBOARDING_EXTENSION = ".jpg"
-    private const val ONBOARDING_IMAGE_COUNT = 5
+    private const val ONBOARDING_IMAGE_COUNT = 4
     private const val ONBOARDING_IMAGE_WIDTH = 1125
     private const val ONBOARDING_IMAGE_HEIGHT = 1998
 
