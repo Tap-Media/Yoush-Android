@@ -1,8 +1,10 @@
 name: Reproducible Build Check
 
 on:
-  schedule:
-    - cron: '0 5 * * *'
+  push:
+    branches: [ "main", "FixUI_DatDao_16042025" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read # to fetch code (actions/checkout)
