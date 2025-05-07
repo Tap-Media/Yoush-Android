@@ -1,10 +1,7 @@
 name: Reproducible Build Check
 
 on:
-  push:
-    branches: [ "main", "FixUI_DatDao_16042025" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read # to fetch code (actions/checkout)

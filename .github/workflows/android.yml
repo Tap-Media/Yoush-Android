@@ -1,12 +1,7 @@
 name: Android CI
 
 on:
-  pull_request:
-  push:
-    branches:
-    - 'main'
-    - '7.**'
-    - 'ChangeConfig_DatDao_27042025'
+  workflow_dispatch:
 
 permissions:
   contents: read # to fetch code (actions/checkout)
