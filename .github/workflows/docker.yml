@@ -9,7 +9,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8-cores
 
     steps:
     - uses: actions/checkout@v4
@@ -17,4 +17,18 @@ jobs:
       run: cd reproducible-builds && docker build -t signal-android . && cd ..
 
     - name: Test build
-      run: docker run --rm -v $(pwd):/project -w /project signal-android ./gradlew clean assemblePlayProdRelease
+      run: docker run  --name signal-android-build  -v $(pwd):/project -w /project signal-android ./gradlew clean assemblePlayStagingDebug --no-daemon -Dkotlin.incremental=false  -Dorg.gradle.caching=false
+    - name: Copy file
+      run: docker cp ./tapmedia/libsignal-android-0.69.1.aar signal-android-build:/tmp/
+    - name: Find libsignal
+      run: |
+        docker start signal-android-build
+        docker exec signal-android-build bash -c '
+           LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )&& \
+         cp /tmp/libsignal-android-0.69.1.aar $LIBSIGNAL_PATH '
+    - name: Stop gradlew to rebuild
+      run: docker exec signal-android-build ./gradlew --stop
+    - name: Clean folder build
+      run: docker exec signal-android-build bash -c ' rm -rf /project/**/build/ && ls /project/app/'
+    - name: Rebuild
+      run: docker exec signal-android-build ./gradlew clean assemblePlayStagingDebug --no-daemon -Dkotlin.incremental=false  -Dorg.gradle.caching=false
