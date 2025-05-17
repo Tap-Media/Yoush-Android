@@ -65,7 +65,7 @@ class CreateReleaseChannelJob private constructor(parameters: Parameters) : Base
       SignalStore.releaseChannel.setReleaseChannelRecipientId(releaseChannelId)
       SignalStore.releaseChannel.hasUpdatedAvatar = true
 
-      recipients.setProfileName(releaseChannelId, ProfileName.asGiven("Signal"))
+      recipients.setProfileName(releaseChannelId, ProfileName.asGiven("Yoush"))
       recipients.setMuted(releaseChannelId, Long.MAX_VALUE)
       setAvatar(releaseChannelId)
     }
@@ -76,7 +76,7 @@ class CreateReleaseChannelJob private constructor(parameters: Parameters) : Base
     AvatarRenderer.renderAvatar(
       context,
       Avatar.Resource(
-        R.drawable.ic_signal_logo_large,
+        R.drawable.ic_launcher_foreground,
         Avatars.ColorPair(ContextCompat.getColor(context, R.color.notification_background_ultramarine), ContextCompat.getColor(context, R.color.core_white), "")
       ),
       onAvatarRendered = { media ->
