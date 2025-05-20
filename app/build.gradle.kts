@@ -175,6 +175,7 @@ android {
   defaultConfig {
     versionCode = (canonicalVersionCode * maxHotfixVersions) + currentHotfixVersion
     versionName = canonicalVersionName
+    applicationId = "org.tap.media"
 
     minSdk = signalMinSdkVersion
     targetSdk = signalTargetSdkVersion

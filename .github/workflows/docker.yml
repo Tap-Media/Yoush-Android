@@ -1,34 +1,72 @@
-name: Reproducible Build Check
+name: Android Build
 
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read # to fetch code (actions/checkout)
-
 jobs:
   build:
-
+    name: Build Android App
     runs-on: ubuntu-latest-8-cores
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Build image
-      run: cd reproducible-builds && docker build -t signal-android . && cd ..
+    env:
+      CI_DEBUG_TRACE: "true"
+      ANDROID_HOME: /opt/android-sdk
 
-    - name: Test build
-      run: docker run  --name signal-android-build  -v $(pwd):/project -w /project signal-android ./gradlew clean assemblePlayStagingDebug --no-daemon -Dkotlin.incremental=false  -Dorg.gradle.caching=false
-    - name: Copy file
-      run: docker cp ./tapmedia/libsignal-android-0.69.1.aar signal-android-build:/tmp/
-    - name: Find libsignal
-      run: |
-        docker start signal-android-build
-        docker exec signal-android-build bash -c '
-           LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )&& \
-         cp /tmp/libsignal-android-0.69.1.aar $LIBSIGNAL_PATH '
-    - name: Stop gradlew to rebuild
-      run: docker exec signal-android-build ./gradlew --stop
-    - name: Clean folder build
-      run: docker exec signal-android-build bash -c ' rm -rf /project/**/build/ && ls /project/app/'
-    - name: Rebuild
-      run: docker exec signal-android-build ./gradlew clean assemblePlayStagingDebug --no-daemon -Dkotlin.incremental=false  -Dorg.gradle.caching=false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y git wget unzip
+
+      - name: Download and set up Android command line tools
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O /tmp/cli-tools.zip
+          unzip -q /tmp/cli-tools.zip -d /tmp/cli-tools
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest
+          mv /tmp/cli-tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest
+          
+          echo "ANDROID_HOME=/opt/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/opt/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager --sdk_root=$ANDROID_HOME --update
+          yes | sdkmanager --sdk_root=$ANDROID_HOME \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "extras;google;m2repository" \
+            "extras;android;m2repository" \
+            "extras;google;google_play_services" \
+            "ndk;28.0.13004108" \
+            "cmake;3.22.1"
+          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
+
+
+
+      - name: Build with Gradle
+        run: ./gradlew clean assemblePlayStagingDebug
+
+      - name: Copy libsignal
+        run: |
+          LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )
+           curl -L https://tap-bucket-sg1.s3.ap-southeast-1.amazonaws.com/libsignal-android-0.69.1.aar -o $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
+      - name: Build with Gradle
+        run: ./gradlew clean assemblePlayStagingDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: play-prod-release-apk
+          path: app/build/outputs/apk/playStaging/debug/Signal-Android-play-staging-universal-debug-7.40.2.apk
+          retention-days: 7
