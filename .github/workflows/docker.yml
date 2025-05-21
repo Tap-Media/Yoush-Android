@@ -66,8 +66,6 @@ jobs:
           md5sum $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
       - name: Build with Gradle
         run: |
-            md5sum  /root/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android/0.69.1/43a01930e72c582509efd941240bc4ae87c3b964/libsignal-android-0.69.1.aar   
-            ls /root/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android/0.69.1/43a01930e72c582509efd941240bc4ae87c3b964
             ./gradlew clean assemblePlayStagingDebug
 
       - name: Upload APK Artifact
