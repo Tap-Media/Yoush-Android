@@ -64,6 +64,12 @@ jobs:
           LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )
           curl -L https://tap-bucket-sg1.s3.ap-southeast-1.amazonaws.com/libsignal-android-0.69.1.aar -o $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
           md5sum $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
+
+      - name: Clean old build artifacts
+        run: |
+          echo "Cleaning up old build artifacts..."
+          rm -rf app/build/outputs/apk/playStaging/debug/*.apk   
+
       - name: Build with Gradle
         run: |
             ./gradlew clean assemblePlayStagingDebug
