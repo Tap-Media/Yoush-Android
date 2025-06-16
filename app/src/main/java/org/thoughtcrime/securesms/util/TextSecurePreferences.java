@@ -914,7 +914,7 @@ public class TextSecurePreferences {
                                                                    RegistrationActivity.newIntentForReRegistration(context),
                                                                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntentFlags.immutable());
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
-        .setSmallIcon(R.drawable.ic_signal_logo_large)
+        .setSmallIcon(R.drawable.ic_yoush_small)
         .setContentText(context.getString(R.string.LoggedOutNotification_you_have_been_logged_out))
         .setContentIntent(reRegistrationIntent)
         .setOnlyAlertOnce(true)
