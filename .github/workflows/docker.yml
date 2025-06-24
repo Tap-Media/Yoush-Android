@@ -15,6 +15,7 @@ jobs:
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       KEYSTORE: ${{ secrets.KEYSTORE }}
+      KEYSTORE_PATH: /tmp/keystore.jks
 
     steps:
       - name: Checkout repository
