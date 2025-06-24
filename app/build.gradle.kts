@@ -187,9 +187,9 @@ android {
 
     buildConfigField("long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L")
     buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
-    buildConfigField("String", "SIGNAL_URL", "\"https://yoush-server.tapofthink.com\"")
+    buildConfigField("String", "SIGNAL_URL", "\"https://chat.tapofthink.com\"")
     buildConfigField("String", "STORAGE_URL", "\"https://storage.tapofthink.com\"")
-    buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn1.tapofthink.com\"")
+    buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn.tapofthink.com\"")
     buildConfigField("String", "SIGNAL_CDN2_URL", "\"https://cdn2.tapofthink.com\"")
     buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://cdn3.signal.org\"")
     buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://cdsi.tapofthink.com\"")
