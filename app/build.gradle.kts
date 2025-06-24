@@ -412,7 +412,7 @@ android {
 
       buildConfigField("String", "SIGNAL_URL", "\"https://signal-server-dev.tapofthink.com\"")
       buildConfigField("String", "STORAGE_URL", "\"https://storage-dev.tapofthink.com\"")
-      buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn1-dev.tapofthink.com\"")
+      buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn.tapofthink.com\"")
       buildConfigField("String", "SIGNAL_CDN2_URL", "\"https://cdn2-dev.tapofthink.com\"")
       buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://cdn3-dev.signal.org\"")
       buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://cdsi-dev.tapofthink.com\"")
