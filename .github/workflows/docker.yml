@@ -55,11 +55,6 @@ jobs:
             "cmake;3.22.1"
           yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
 
-      - name: Build with Gradle
-        run: |
-            ./gradlew clean assemblePlayStagingDebug
-            ./gradlew --stop
-
       - name: Decode keystore from base64 and save
         run: |
           echo "$KEYSTORE" | base64 --decode > /tmp/keystore.jks
@@ -67,26 +62,36 @@ jobs:
           echo "STORE_PASSWORD=$STORE_PASSWORD"
           ls -l /tmp/keystore.jks
 
-      - name: Copy libsignal
-        run: |
-          LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )
-           curl -L https://tap-bucket-sg1.s3.ap-southeast-1.amazonaws.com/libsignal-android-0.69.1.aar -o $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
-
-      - name: Build with staging
-        run: ./gradlew clean assemblePlayStagingDebug
+#      - name: Build with Gradle
+#        run: |
+#            ./gradlew clean assemblePlayStagingDebug
+#            ./gradlew --stop
+#
+#
+#
+#      - name: Copy libsignal
+#        run: |
+#          LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )
+#           curl -L https://tap-bucket-sg1.s3.ap-southeast-1.amazonaws.com/libsignal-android-0.69.1.aar -o $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
+#
+#      - name: Build with staging
+#        run: ./gradlew clean assemblePlayStagingDebug
 
       - name: Build with prod
         run: ./gradlew assemblePlayProdRelease
 
-      - name: Prepare APK for upload
-        run: |
-          mkdir -p upload-apk
-          cp app/build/outputs/apk/playStaging/debug/Signal-Android-play-staging-universal-debug-${{ env.VERSION_NAME }}.apk upload-apk
-          cp app/build/outputs/apk/playProd/release/Signal-Android-play-prod-universal-release-${{ env.VERSION_NAME }}.apk upload-apk
+      - name: check build
+        run: ls app/build/outputs/apk/playProd/release
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: play-prod-staging-apk
-          path: upload-apk/
-          retention-days: 7
+#      - name: Prepare APK for upload
+#        run: |
+#          mkdir -p upload-apk
+#          cp app/build/outputs/apk/playStaging/debug/Signal-Android-play-staging-universal-debug-${{ env.VERSION_NAME }}.apk upload-apk
+#          cp app/build/outputs/apk/playProd/release/Signal-Android-play-prod-universal-release-${{ env.VERSION_NAME }}.apk upload-apk
+#
+#      - name: Upload APK Artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: play-prod-staging-apk
+#          path: upload-apk/
+#          retention-days: 7
