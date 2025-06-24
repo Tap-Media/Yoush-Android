@@ -9,9 +9,13 @@ jobs:
     runs-on: ubuntu-latest-8-cores
 
     env:
+      VERSION_NAME: "7.40.2"
       CI_DEBUG_TRACE: "true"
       ANDROID_HOME: /opt/android-sdk
-
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      KEYSTORE_PATH: /tmp/keystore.jks
 
     steps:
       - name: Checkout repository
@@ -52,22 +56,41 @@ jobs:
             "cmake;3.22.1"
           yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
 
+      - name: Decode keystore from base64 and save
+        run: |
+          echo "$KEYSTORE" | base64 --decode > /tmp/keystore.jks
+          echo "KEY_ALIAS=$KEY_ALIAS"
+          echo "STORE_PASSWORD=$STORE_PASSWORD"
+          ls -l /tmp/keystore.jks
+
       - name: Build with Gradle
         run: |
             ./gradlew clean assemblePlayStagingDebug
             ./gradlew --stop
+
+
 
       - name: Copy libsignal
         run: |
           LIBSIGNAL_PATH=$(find ~/.gradle/caches/modules-2/files-2.1/org.signal/libsignal-android -name 'libsignal*.aar' -exec dirname {} \; )
            curl -L https://tap-bucket-sg1.s3.ap-southeast-1.amazonaws.com/libsignal-android-0.69.1.aar -o $LIBSIGNAL_PATH/libsignal-android-0.69.1.aar
 
-      - name: Rebuild with Gradle
+      - name: Build with staging
         run: ./gradlew clean assemblePlayStagingDebug
+
+      - name: Build with prod
+        run: ./gradlew assemblePlayProdRelease -PKEYSTORE_PATH=/tmp/keystore.jks -PSTORE_PASSWORD=${{ secrets.STORE_PASSWORD }} -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} -PKEY_PASSWORD=${{ secrets.STORE_PASSWORD }}
+
+
+      - name: Prepare APK for upload
+        run: |
+          mkdir -p upload-apk
+          cp app/build/outputs/apk/playStaging/debug/Signal-Android-play-staging-universal-debug-${{ env.VERSION_NAME }}.apk upload-apk
+          cp app/build/outputs/apk/playProd/release/Signal-Android-play-prod-universal-release-${{ env.VERSION_NAME }}.apk upload-apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: play-prod-release-apk
-          path: app/build/outputs/apk/playStaging/debug/Signal-Android-play-staging-universal-debug-7.40.2.apk
+          name: play-prod-staging-apk
+          path: upload-apk/
           retention-days: 7

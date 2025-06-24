@@ -253,6 +253,25 @@ android {
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
   }
 
+  signingConfigs {
+    // signing config ở đây
+    create("release") {
+      val keystorePath = project.findProperty("KEYSTORE_PATH") as? String ?: ""
+      val storePassword = project.findProperty("STORE_PASSWORD") as? String
+      val keyAlias = project.findProperty("KEY_ALIAS") as? String
+      val keyPassword = project.findProperty("KEY_PASSWORD") as? String
+
+      if (keystorePath.isNotBlank() && storePassword != null && keyAlias != null && keyPassword != null) {
+        storeFile = file(keystorePath)
+        this.storePassword = storePassword
+        this.keyAlias = keyAlias
+        this.keyPassword = keyPassword
+      } else {
+        println("⚠️ Signing info not fully provided. APK may not be signed.")
+      }
+    }
+  }
+
   buildTypes {
     getByName("debug") {
       if (keystores["debug"] != null) {
@@ -291,6 +310,9 @@ android {
     }
 
     getByName("release") {
+
+      signingConfig = signingConfigs["release"]
+
       isMinifyEnabled = true
       proguardFiles(*buildTypes["debug"].proguardFiles.toTypedArray())
       buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Release\"")
