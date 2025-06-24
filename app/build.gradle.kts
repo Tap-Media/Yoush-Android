@@ -256,10 +256,10 @@ android {
   signingConfigs {
     // signing config ở đây
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: ""
-      val storePassword = System.getenv("STORE_PASSWORD")
-      val keyAlias = System.getenv("KEY_ALIAS")
-      val keyPassword = System.getenv("KEY_PASSWORD")
+      val keystorePath = project.findProperty("KEYSTORE_PATH") as? String ?: ""
+      val storePassword = project.findProperty("STORE_PASSWORD") as? String
+      val keyAlias = project.findProperty("KEY_ALIAS") as? String
+      val keyPassword = project.findProperty("KEY_PASSWORD") as? String
 
       if (keystorePath.isNotBlank() && storePassword != null && keyAlias != null && keyPassword != null) {
         storeFile = file(keystorePath)
