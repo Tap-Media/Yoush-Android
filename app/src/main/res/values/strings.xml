@@ -14,7 +14,7 @@
     <string name="backup_failed_support_url" translatable="false">https://support.signal.org/hc/articles/8768161836954</string>
     <string name="transfer_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
     <string name="support_center_url" translatable="false">https://support.signal.org/</string>
-    <string name="terms_and_privacy_policy_url" translatable="false">https://signal.org/legal</string>
+    <string name="terms_and_privacy_policy_url" translatable="false">https://tapmediainc.com/privacy-policy</string>
     <string name="google_pay_url" translatable="false">https://pay.google.com</string>
     <string name="donation_decline_code_error_url" translatable="false">https://tapofthink.com</string>
     <string name="sms_export_url" translatable="false">https://tapofthink.com/can-i-send-sms-mms-with-yoush/</string>
