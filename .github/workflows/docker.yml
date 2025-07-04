@@ -81,12 +81,16 @@ jobs:
       - name: Build with prod
         run: ./gradlew assemblePlayProdRelease -PKEYSTORE_PATH=/tmp/keystore.jks -PSTORE_PASSWORD=${{ secrets.STORE_PASSWORD }} -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} -PKEY_PASSWORD=${{ secrets.STORE_PASSWORD }}
 
+      - name: Build file aab
+        run: ./gradlew bundlePlayProdRelease -PKEYSTORE_PATH=/tmp/keystore.jks -PSTORE_PASSWORD=${{ secrets.STORE_PASSWORD }} -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} -PKEY_PASSWORD=${{ secrets.STORE_PASSWORD }}
+
 
       - name: Prepare APK for upload
         run: |
           mkdir -p upload-apk
           cp app/build/outputs/apk/playStaging/debug/Signal-Android-play-staging-universal-debug-${{ env.VERSION_NAME }}.apk upload-apk
           cp app/build/outputs/apk/playProd/release/Signal-Android-play-prod-universal-release-${{ env.VERSION_NAME }}.apk upload-apk
+          cp app/build/outputs/bundle/playProdRelease/Signal-Android-play-prod-release.aab upload-apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
